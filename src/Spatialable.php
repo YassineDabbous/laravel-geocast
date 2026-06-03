@@ -1,14 +1,14 @@
 <?php
 
-namespace Yaseen\GeoCast\Casts\Spatial;
+namespace Yaseen\GeoCast;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
-use Yaseen\GeoCast\Casts\Spatial\Geometries\Geometry;
-use Yaseen\GeoCast\Casts\Spatial\Geometries\Point;
-use Yaseen\GeoCast\Casts\Spatial\Geometries\Polygon;
-use Yaseen\GeoCast\Casts\Spatial\Casters\PointCast;
-use Yaseen\GeoCast\Casts\Spatial\Casters\PolygonCast;
+use Yaseen\GeoCast\Geometries\Geometry;
+use Yaseen\GeoCast\Geometries\Point;
+use Yaseen\GeoCast\Geometries\Polygon;
+use Yaseen\GeoCast\Casters\PointCast;
+use Yaseen\GeoCast\Casters\PolygonCast;
 use InvalidArgumentException;
 
 trait Spatialable

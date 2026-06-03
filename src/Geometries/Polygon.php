@@ -1,6 +1,6 @@
 <?php
 
-namespace Yaseen\GeoCast\Casts\Spatial\Geometries;
+namespace Yaseen\GeoCast\Geometries;
 
 class Polygon implements Geometry
 {

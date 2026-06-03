@@ -1,12 +1,12 @@
 <?php
 
-namespace Yaseen\GeoCast\Casts\Spatial\Casters;
+namespace Yaseen\GeoCast\Casters;
 
 use Illuminate\Contracts\Database\Eloquent\CastsAttributes;
 use InvalidArgumentException;
 use Illuminate\Support\Facades\DB;
-use Yaseen\GeoCast\Casts\Spatial\MyGeoFactory;
-use Yaseen\GeoCast\Casts\Spatial\Geometries\Polygon;
+use Yaseen\GeoCast\MyGeoFactory;
+use Yaseen\GeoCast\Geometries\Polygon;
 
 class PolygonCast implements CastsAttributes
 {

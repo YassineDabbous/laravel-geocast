@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Yaseen\GeoCast\Casts\Spatial;
+namespace Yaseen\GeoCast;
 
 use GeoIO\Factory;
-use Yaseen\GeoCast\Casts\Spatial\Geometries\Point;
-use Yaseen\GeoCast\Casts\Spatial\Geometries\Polygon;
+use Yaseen\GeoCast\Geometries\Point;
+use Yaseen\GeoCast\Geometries\Polygon;
 
 class MyGeoFactory implements Factory
 {
