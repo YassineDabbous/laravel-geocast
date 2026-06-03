@@ -69,7 +69,7 @@ it('returns null when parsed geometry is not a Point', function () {
 });
 
 it('creates ST_GeomFromText expression from a Point', function () {
-    $point = new Point(20.7, 10.5, 4326);
+    $point = new Point(10.5, 20.7, 4326);
 
     $cast = new PointCast;
     $result = $cast->set(null, 'location', $point, []);

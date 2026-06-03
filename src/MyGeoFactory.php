@@ -18,7 +18,7 @@ class MyGeoFactory implements Factory
 
     public function createPoint($dimension, array $coordinates, $srid = null)
     {
-        return new Point(lat: $coordinates['y'], lng: $coordinates['x'], srid: $srid ?? 4326);
+        return new Point(lng: $coordinates['x'], lat: $coordinates['y'], srid: $srid ?? 4326);
     }
 
     public function createLinearRing($dimension, array $points, $srid = null)

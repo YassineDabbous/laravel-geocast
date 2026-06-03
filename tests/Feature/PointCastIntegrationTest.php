@@ -22,7 +22,7 @@ afterEach(function () {
 });
 
 it('stores and retrieves a Point', function () {
-    $point = new Point(20.7, 10.5, 4326);
+    $point = new Point(10.5, 20.7, 4326);
 
     $model = TestLocation::create([
         'name' => 'test-point',
@@ -50,7 +50,7 @@ it('retrieves a Point from the database', function () {
 });
 
 it('stores a Point and verifies with raw PostGIS query', function () {
-    $point = new Point(48.8566, 2.3522, 4326);
+    $point = new Point(2.3522, 48.8566, 4326);
 
     $model = TestLocation::create([
         'name' => 'paris',

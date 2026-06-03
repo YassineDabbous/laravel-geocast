@@ -10,7 +10,7 @@ class Point implements Geometry
 
     protected int $srid;
 
-    public function __construct($lat, $lng, int $srid = 4326)
+    public function __construct($lng, $lat, int $srid = 4326)
     {
         $this->lat = (float) $lat;
         $this->lng = (float) $lng;

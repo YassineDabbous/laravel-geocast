@@ -25,7 +25,7 @@ afterEach(function () {
 it('stores and retrieves a Polygon', function () {
     $ring = [
         new Point(0, 0),
-        new Point(0, 10),
+        new Point(10, 0),
         new Point(10, 10),
         new Point(0, 0),
     ];
@@ -58,7 +58,7 @@ it('retrieves a Polygon from the database', function () {
 it('stores a Polygon and verifies with raw PostGIS query', function () {
     $ring = [
         new Point(-10, -10),
-        new Point(-10, 10),
+        new Point(10, -10),
         new Point(10, 10),
         new Point(-10, -10),
     ];

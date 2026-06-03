@@ -107,7 +107,7 @@ it('finds polygons that contain a point using scopeContainsGeometry', function (
 
 it('finds points within a polygon using scopeWithinGeometry', function () {
     $polygon = new Polygon([
-        [new Point(0, 0), new Point(0, 10), new Point(10, 10), new Point(10, 0), new Point(0, 0)],
+        [new Point(0, 0), new Point(10, 0), new Point(10, 10), new Point(0, 10), new Point(0, 0)],
     ], 4326);
 
     // Both near-point (2,2) and inside-zone (5,5) are within this rectangle
@@ -119,7 +119,7 @@ it('finds points within a polygon using scopeWithinGeometry', function () {
 
 it('finds intersecting geometries using scopeIntersectsWith', function () {
     $searchPolygon = new Polygon([
-        [new Point(-10, -10), new Point(-10, 150), new Point(150, 150), new Point(150, -10), new Point(-10, -10)],
+        [new Point(-10, -10), new Point(150, -10), new Point(150, 150), new Point(-10, 150), new Point(-10, -10)],
     ], 4326);
 
     $results = TestSpatialModel::intersectsWith('location', $searchPolygon)->get();

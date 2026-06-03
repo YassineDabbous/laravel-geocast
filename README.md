@@ -5,7 +5,7 @@ PostGIS spatial casts and query scopes for Laravel Eloquent models.
 ```php
 $venue = Venue::create([
     'name' => 'Central Park',
-    'location' => new Point(40.7829, -73.9654),
+    'location' => new Point(-73.9654, 40.7829),
 ]);
 
 $nearby = Venue::withinDistanceTo('location', $point, 1000)->get();
@@ -33,14 +33,14 @@ Represents a spatial point with latitude, longitude, and SRID.
 ```php
 use Yaseen\GeoCast\Geometries\Point;
 
-// Constructor: Point(latitude, longitude, srid = 4326)
-$point = new Point(48.8566, 2.3522, 4326);
+// Constructor: Point(longitude, latitude, srid = 4326)
+$point = new Point(2.3522, 48.8566, 4326);
 
-$point->getLat();    // 48.8566
 $point->getLng();    // 2.3522
+$point->getLat();    // 48.8566
 $point->getSrid();   // 4326
 $point->toWkt();     // "POINT(2.3522 48.8566)"
-$point->toArray();   // ['type' => 'Point', 'latitude' => ..., 'longitude' => ..., 'srid' => 4326]
+$point->toArray();   // ['type' => 'Point', 'latitude' => 48.8566, 'longitude' => 2.3522, 'srid' => 4326]
 ```
 
 ### Polygon
@@ -53,9 +53,9 @@ use Yaseen\GeoCast\Geometries\Polygon;
 
 $outer = [
     new Point(0, 0),
-    new Point(0, 10),
-    new Point(10, 10),
     new Point(10, 0),
+    new Point(10, 10),
+    new Point(0, 10),
     new Point(0, 0),
 ];
 
@@ -88,7 +88,7 @@ class Venue extends Model
 ```php
 $venue = Venue::create([
     'name' => 'Times Square',
-    'location' => new Point(40.7580, -73.9855),
+    'location' => new Point(-73.9855, 40.7580),
 ]);
 ```
 
@@ -123,7 +123,7 @@ class Venue extends Model
 Find records within a distance in meters.
 
 ```php
-$center = new Point(40.7128, -74.0060);
+$center = new Point(-74.0060, 40.7128);
 
 $venues = Venue::withinDistanceTo('location', $center, 5000)->get();
 ```
@@ -142,7 +142,7 @@ $venues = Venue::orderByDistanceTo('location', $point, 'desc')->get();
 Find records where the spatial column contains the given geometry.
 
 ```php
-$point = new Point(40.7484, -73.9857);
+$point = new Point(-73.9857, 40.7484);
 
 $zones = Zone::containsGeometry('boundary', $point)->get();
 ```

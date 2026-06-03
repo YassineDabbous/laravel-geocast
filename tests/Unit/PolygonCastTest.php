@@ -55,7 +55,7 @@ it('returns null when parsed geometry is not a Polygon', function () {
 it('creates ST_GeomFromText expression from a Polygon', function () {
     $ring = [
         new Point(0, 0),
-        new Point(0, 10),
+        new Point(10, 0),
         new Point(10, 10),
         new Point(0, 0),
     ];
