@@ -11,16 +11,38 @@
     "prefer-stable": true,
     "require": {
         "php": ">=8.1",
+        "illuminate/contracts": "*",
+        "illuminate/database": "*",
+        "illuminate/support": "*",
         "geo-io/wkb-parser": "*"
+    },
+    "require-dev": {
+        "laravel/pint": "^1.27",
+        "orchestra/testbench": "^11.0",
+        "pestphp/pest": "^3.7"
     },
     "autoload": {
         "psr-4": {
             "Yaseen\\GeoCast\\": "src/"
         }
     },
+    "autoload-dev": {
+        "psr-4": {
+            "Yaseen\\GeoCast\\Tests\\": "tests/"
+        }
+    },
+    "scripts": {
+        "test": "phpunit",
+        "test-coverage": "phpunit --coverage-html coverage"
+    },
     "extra": {
         "laravel": {
             "providers": []
+        }
+    },
+    "config": {
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
         }
     }
 }
