@@ -1,9 +1,13 @@
 <?php
 
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use Yaseen\GeoCast\Casters\PointCast;
 use Yaseen\GeoCast\Geometries\Point;
 use Yaseen\GeoCast\Geometries\Polygon;
+use Yaseen\GeoCast\Spatialable;
 use Yaseen\GeoCast\Tests\Models\TestSpatialModel;
 
 beforeEach(function () {
@@ -103,7 +107,7 @@ it('finds polygons that contain a point using scopeContainsGeometry', function (
 
 it('finds points within a polygon using scopeWithinGeometry', function () {
     $polygon = new Polygon([
-        [new Point(0, 0), new Point(10, 0), new Point(10, 10), new Point(0, 10), new Point(0, 0)],
+        [new Point(0, 0), new Point(0, 10), new Point(10, 10), new Point(10, 0), new Point(0, 0)],
     ], 4326);
 
     // Both near-point (2,2) and inside-zone (5,5) are within this rectangle
@@ -115,7 +119,7 @@ it('finds points within a polygon using scopeWithinGeometry', function () {
 
 it('finds intersecting geometries using scopeIntersectsWith', function () {
     $searchPolygon = new Polygon([
-        [new Point(-10, -10), new Point(150, -10), new Point(150, 150), new Point(-10, 150), new Point(-10, -10)],
+        [new Point(-10, -10), new Point(-10, 150), new Point(150, 150), new Point(150, -10), new Point(-10, -10)],
     ], 4326);
 
     $results = TestSpatialModel::intersectsWith('location', $searchPolygon)->get();
@@ -140,3 +144,40 @@ it('throws for column without spatial cast', function () {
 
     TestSpatialModel::withinDistanceTo('name', $point, 100)->get();
 })->throws(InvalidArgumentException::class);
+
+it('accepts spatial cast with constructor parameter', function () {
+    $model = new class extends Model
+    {
+        use Spatialable;
+
+        protected $table = 'test_spatial_locations';
+
+        public $timestamps = false;
+
+        protected $casts = ['location' => PointCast::class.':4326'];
+    };
+
+    $point = new Point(0, 0);
+
+    $results = $model->withinDistanceTo('location', $point, 1000000)->get();
+
+    expect($results)->toBeInstanceOf(Collection::class);
+    expect($results)->toHaveCount(3);
+});
+
+it('rejects column with invalid spatial cast parameter', function () {
+    $model = new class extends Model
+    {
+        use Spatialable;
+
+        protected $table = 'test_spatial_locations';
+
+        public $timestamps = false;
+
+        protected $casts = ['location' => 'some.invalid.cast:param'];
+    };
+
+    $point = new Point(0, 0);
+
+    $model->withinDistanceTo('location', $point, 100)->get();
+})->throws(InvalidArgumentException::class, 'The column \'location\' is not registered with a valid Spatial Cast class.');

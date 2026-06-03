@@ -24,16 +24,14 @@ it('returns a Point from a valid hex-encoded EWKB string', function () {
     expect($point->getSrid())->toBe(4326);
 });
 
-it('returns a fallback Point when value is null', function () {
+it('returns null when value is null', function () {
     $cast = new PointCast;
-    $point = $cast->get(null, 'location', null, []);
+    $result = $cast->get(null, 'location', null, []);
 
-    expect($point)->toBeInstanceOf(Point::class);
-    expect($point->getLng())->toBe(0.0);
-    expect($point->getLat())->toBe(0.0);
+    expect($result)->toBeNull();
 });
 
-it('returns a fallback Point for zero/empty geometry', function () {
+it('parses POINT(0 0) EWKB correctly', function () {
     // Hex-encoded EWKB for POINT(0 0) with SRID 4326
     $hex = bin2hex(
         pack('C', 1)
@@ -71,7 +69,7 @@ it('returns null when parsed geometry is not a Point', function () {
 });
 
 it('creates ST_GeomFromText expression from a Point', function () {
-    $point = new Point(10.5, 20.7, 4326);
+    $point = new Point(20.7, 10.5, 4326);
 
     $cast = new PointCast;
     $result = $cast->set(null, 'location', $point, []);
@@ -92,3 +90,17 @@ it('throws when setting non-Point value', function () {
 
     $cast->set(null, 'location', 'not-a-point', []);
 })->throws(InvalidArgumentException::class, 'Field location must be an instance of Point.');
+
+it('handles empty hex string gracefully', function () {
+    $cast = new PointCast;
+    $result = $cast->get(null, 'location', '', []);
+
+    expect($result)->toBeNull();
+});
+
+it('handles invalid hex string gracefully', function () {
+    $cast = new PointCast;
+    $result = $cast->get(null, 'location', 'xx', []);
+
+    expect($result)->toBeNull();
+});

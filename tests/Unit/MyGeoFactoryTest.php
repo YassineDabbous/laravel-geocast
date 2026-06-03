@@ -107,3 +107,13 @@ it('creates a linear ring from points', function () {
     expect($ring)->toBe($points);
     expect($ring)->toHaveCount(2);
 });
+
+it('throws for unsupported geometry types', function () {
+    $factory = new MyGeoFactory;
+
+    expect(fn () => $factory->createLineString(2, []))->toThrow(RuntimeException::class, 'LineString');
+    expect(fn () => $factory->createMultiPoint(2, []))->toThrow(RuntimeException::class, 'MultiPoint');
+    expect(fn () => $factory->createMultiLineString(2, []))->toThrow(RuntimeException::class, 'MultiLineString');
+    expect(fn () => $factory->createMultiPolygon(2, []))->toThrow(RuntimeException::class, 'MultiPolygon');
+    expect(fn () => $factory->createGeometryCollection(2, []))->toThrow(RuntimeException::class, 'GeometryCollection');
+});
