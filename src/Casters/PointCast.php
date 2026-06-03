@@ -13,23 +13,23 @@ class PointCast implements CastsAttributes
     public function get($model, string $key, $value, array $attributes): ?Point
     {
         if (! $value) {
-            return new Point(0, 0);
+            return null;
         }
 
         try {
             $wkb = hex2bin($value);
-        } catch (\Exception $e) {
-            return new Point(0, 0);
+        } catch (\Throwable $e) {
+            return null;
         }
 
         if ($wkb === false || $wkb === '') {
-            return new Point(0, 0);
+            return null;
         }
 
         try {
             $geom = MyGeoFactory::parser()->parse($wkb);
         } catch (\Exception $e) {
-            return new Point(0, 0);
+            return null;
         }
 
         return $geom instanceof Point ? $geom : null;
@@ -45,6 +45,9 @@ class PointCast implements CastsAttributes
             throw new InvalidArgumentException("Field {$key} must be an instance of Point.");
         }
 
-        return DB::raw("ST_GeomFromText('{$value->toWkt()}', {$value->getSrid()})");
+        $wkt = str_replace("'", "''", $value->toWkt());
+        $srid = (int) $value->getSrid();
+
+        return DB::raw("ST_GeomFromText('{$wkt}', {$srid})");
     }
 }

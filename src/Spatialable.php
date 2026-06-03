@@ -70,6 +70,10 @@ trait Spatialable
 
     /**
      * Scope: Appends a `{column}_area` attribute to your model query in square meters.
+     *
+     * @note Uses addSelect so it appends to any existing column list.
+     *       If the caller chains ->select('id') before this scope, the area
+     *       column is added alongside — not replaced.
      */
     public function scopeWithArea(Builder $query, string $column): void
     {
@@ -88,7 +92,13 @@ trait Spatialable
 
         $validCasts = [PointCast::class, PolygonCast::class];
 
-        if (! array_key_exists($column, $casts) || ! in_array($casts[$column], $validCasts)) {
+        if (! array_key_exists($column, $casts)) {
+            throw new InvalidArgumentException("The column '{$column}' is not registered with a valid Spatial Cast class.");
+        }
+
+        $castClass = explode(':', $casts[$column])[0];
+
+        if (! in_array($castClass, $validCasts)) {
             throw new InvalidArgumentException("The column '{$column}' is not registered with a valid Spatial Cast class.");
         }
     }

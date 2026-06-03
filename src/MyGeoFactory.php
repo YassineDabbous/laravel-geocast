@@ -18,7 +18,7 @@ class MyGeoFactory implements Factory
 
     public function createPoint($dimension, array $coordinates, $srid = null)
     {
-        return new Point(lng: $coordinates['x'], lat: $coordinates['y'], srid: $srid ?? 4326);
+        return new Point(lat: $coordinates['y'], lng: $coordinates['x'], srid: $srid ?? 4326);
     }
 
     public function createLinearRing($dimension, array $points, $srid = null)
@@ -33,14 +33,28 @@ class MyGeoFactory implements Factory
         return new Polygon(rings: $lineStrings, srid: $srid ?? 4326);
     }
 
-    
-    public function createLineString($dimension, array $points, $srid = null) {}
+    public function createLineString($dimension, array $points, $srid = null): never
+    {
+        throw new \RuntimeException('Unsupported geometry type: LineString');
+    }
 
-    public function createMultiPoint($dimension, array $points, $srid = null) {}
+    public function createMultiPoint($dimension, array $points, $srid = null): never
+    {
+        throw new \RuntimeException('Unsupported geometry type: MultiPoint');
+    }
 
-    public function createMultiLineString($dimension, array $lineStrings, $srid = null) {}
+    public function createMultiLineString($dimension, array $lineStrings, $srid = null): never
+    {
+        throw new \RuntimeException('Unsupported geometry type: MultiLineString');
+    }
 
-    public function createMultiPolygon($dimension, array $polygons, $srid = null) {}
+    public function createMultiPolygon($dimension, array $polygons, $srid = null): never
+    {
+        throw new \RuntimeException('Unsupported geometry type: MultiPolygon');
+    }
 
-    public function createGeometryCollection($dimension, array $geometries, $srid = null) {}
+    public function createGeometryCollection($dimension, array $geometries, $srid = null): never
+    {
+        throw new \RuntimeException('Unsupported geometry type: GeometryCollection');
+    }
 }

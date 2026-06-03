@@ -18,7 +18,7 @@ class PolygonCast implements CastsAttributes
 
         try {
             $wkb = hex2bin($value);
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             return null;
         }
 
@@ -45,6 +45,9 @@ class PolygonCast implements CastsAttributes
             throw new InvalidArgumentException("Field {$key} must be an instance of Polygon.");
         }
 
-        return DB::raw("ST_GeomFromText('{$value->toWkt()}', {$value->getSrid()})");
+        $wkt = str_replace("'", "''", $value->toWkt());
+        $srid = (int) $value->getSrid();
+
+        return DB::raw("ST_GeomFromText('{$wkt}', {$srid})");
     }
 }
