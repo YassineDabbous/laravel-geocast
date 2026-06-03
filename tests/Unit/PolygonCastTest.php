@@ -55,7 +55,7 @@ it('returns null when parsed geometry is not a Polygon', function () {
 it('creates ST_GeomFromText expression from a Polygon', function () {
     $ring = [
         new Point(0, 0),
-        new Point(10, 0),
+        new Point(0, 10),
         new Point(10, 10),
         new Point(0, 0),
     ];
@@ -80,3 +80,10 @@ it('throws when setting non-Polygon value', function () {
 
     $cast->set(null, 'area', 'not-a-polygon', []);
 })->throws(InvalidArgumentException::class, 'Field area must be an instance of Polygon.');
+
+it('handles empty hex string gracefully', function () {
+    $cast = new PolygonCast;
+    $result = $cast->get(null, 'area', '', []);
+
+    expect($result)->toBeNull();
+});
