@@ -45,9 +45,11 @@ class PointCast implements CastsAttributes
             throw new InvalidArgumentException("Field {$key} must be an instance of Point.");
         }
 
+        // $wkt = DB::connection()->getPdo()->quote($value->toWkt());
         $wkt = str_replace("'", "''", $value->toWkt());
         $srid = (int) $value->getSrid();
 
+        // return DB::raw("ST_GeomFromText({$wkt}, {$srid})");
         return DB::raw("ST_GeomFromText('{$wkt}', {$srid})");
     }
 }

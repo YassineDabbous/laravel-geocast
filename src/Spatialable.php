@@ -8,8 +8,6 @@ use InvalidArgumentException;
 use Yaseen\GeoCast\Casters\PointCast;
 use Yaseen\GeoCast\Casters\PolygonCast;
 use Yaseen\GeoCast\Geometries\Geometry;
-use Yaseen\GeoCast\Geometries\Point;
-use Yaseen\GeoCast\Geometries\Polygon;
 
 trait Spatialable
 {

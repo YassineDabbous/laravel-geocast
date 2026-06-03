@@ -33,27 +33,27 @@ class MyGeoFactory implements Factory
         return new Polygon(rings: $lineStrings, srid: $srid ?? 4326);
     }
 
-    public function createLineString($dimension, array $points, $srid = null): never
+    public function createLineString($dimension, array $points, $srid = null)
     {
         throw new \RuntimeException('Unsupported geometry type: LineString');
     }
 
-    public function createMultiPoint($dimension, array $points, $srid = null): never
+    public function createMultiPoint($dimension, array $points, $srid = null)
     {
         throw new \RuntimeException('Unsupported geometry type: MultiPoint');
     }
 
-    public function createMultiLineString($dimension, array $lineStrings, $srid = null): never
+    public function createMultiLineString($dimension, array $lineStrings, $srid = null)
     {
         throw new \RuntimeException('Unsupported geometry type: MultiLineString');
     }
 
-    public function createMultiPolygon($dimension, array $polygons, $srid = null): never
+    public function createMultiPolygon($dimension, array $polygons, $srid = null)
     {
         throw new \RuntimeException('Unsupported geometry type: MultiPolygon');
     }
 
-    public function createGeometryCollection($dimension, array $geometries, $srid = null): never
+    public function createGeometryCollection($dimension, array $geometries, $srid = null)
     {
         throw new \RuntimeException('Unsupported geometry type: GeometryCollection');
     }

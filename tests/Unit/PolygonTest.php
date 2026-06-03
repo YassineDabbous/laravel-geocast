@@ -89,5 +89,7 @@ it('handles non-Point items in toArray without fatal', function () {
 
     expect($result['coordinates'][0][0])->toBe([0.0, 0.0]);
     expect($result['coordinates'][0][1])->toBe([10.0, 0.0]);
-    expect($result['coordinates'][0][2])->toBeNull();
+    expect($result['coordinates'][0][2])->toBe([10.0, 10.0]);
+    expect($result['coordinates'][0][3])->toBe([0.0, 0.0]);
+    expect($result['coordinates'][0])->toHaveCount(4);
 });

@@ -45,9 +45,11 @@ class Polygon implements Geometry
         return [
             'type' => 'Polygon',
             'coordinates' => array_map(function ($ring) {
-                return array_map(fn ($point) => $point instanceof Point
-                    ? [$point->getLng(), $point->getLat()]
-                    : null, $ring);
+                return array_values(array_filter(
+                    array_map(fn ($point) => $point instanceof Point
+                        ? [$point->getLng(), $point->getLat()]
+                        : null, $ring)
+                ));
             }, $this->rings),
             'srid' => $this->srid,
         ];
