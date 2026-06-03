@@ -1,0 +1,26 @@
+{
+    "name": "yassinedabbous/laravel-geocast",
+    "type": "library",
+    "authors": [
+        {
+            "name": "yassine-dabbous",
+            "email": "yassine.dabbous@gmail.com"
+        }
+    ],
+    "minimum-stability": "stable",
+    "prefer-stable": true,
+    "require": {
+        "php": ">=8.1",
+        "geo-io/wkb-parser": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "Yaseen\\GeoCast\\": "src/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": []
+        }
+    }
+}
