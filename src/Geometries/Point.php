@@ -5,7 +5,9 @@ namespace Yaseen\GeoCast\Geometries;
 class Point implements Geometry
 {
     protected float $lat;
+
     protected float $lng;
+
     protected int $srid;
 
     public function __construct($lng, $lat, int $srid = 4326)
@@ -44,5 +46,4 @@ class Point implements Geometry
             'srid' => $this->srid,
         ];
     }
-
 }

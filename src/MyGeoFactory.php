@@ -5,14 +5,15 @@ declare(strict_types=1);
 namespace Yaseen\GeoCast;
 
 use GeoIO\Factory;
+use GeoIO\WKB\Parser\Parser;
 use Yaseen\GeoCast\Geometries\Point;
 use Yaseen\GeoCast\Geometries\Polygon;
 
 class MyGeoFactory implements Factory
 {
-    public static function parser() : \GeoIO\WKB\Parser\Parser
+    public static function parser(): Parser
     {
-        return new \GeoIO\WKB\Parser\Parser(new self());
+        return new Parser(new self);
     }
 
     public function createPoint($dimension, array $coordinates, $srid = null)
@@ -32,10 +33,14 @@ class MyGeoFactory implements Factory
         return new Polygon(rings: $lineStrings, srid: $srid ?? 4326);
     }
 
-    // Keep your other stubs intact...
-    public function createLineString($dimension, array $points, $srid = null){}
-    public function createMultiPoint($dimension, array $points, $srid = null){}
-    public function createMultiLineString($dimension, array $lineStrings, $srid = null){}
-    public function createMultiPolygon($dimension, array $polygons, $srid = null){}
-    public function createGeometryCollection($dimension, array $geometries, $srid = null){}
+    
+    public function createLineString($dimension, array $points, $srid = null) {}
+
+    public function createMultiPoint($dimension, array $points, $srid = null) {}
+
+    public function createMultiLineString($dimension, array $lineStrings, $srid = null) {}
+
+    public function createMultiPolygon($dimension, array $polygons, $srid = null) {}
+
+    public function createGeometryCollection($dimension, array $geometries, $srid = null) {}
 }

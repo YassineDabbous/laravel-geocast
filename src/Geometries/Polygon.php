@@ -5,6 +5,7 @@ namespace Yaseen\GeoCast\Geometries;
 class Polygon implements Geometry
 {
     protected array $rings; // Array of arrays of Point objects
+
     protected int $srid;
 
     public function __construct(array $rings, int $srid = 4326)
@@ -13,8 +14,15 @@ class Polygon implements Geometry
         $this->srid = $srid;
     }
 
-    public function getRings(): array { return $this->rings; }
-    public function getSrid(): int { return $this->srid; }
+    public function getRings(): array
+    {
+        return $this->rings;
+    }
+
+    public function getSrid(): int
+    {
+        return $this->srid;
+    }
 
     public function toWkt(): string
     {
@@ -26,10 +34,10 @@ class Polygon implements Geometry
                     $pointStrings[] = "{$point->getLng()} {$point->getLat()}";
                 }
             }
-            $ringStrings[] = '(' . implode(', ', $pointStrings) . ')';
+            $ringStrings[] = '('.implode(', ', $pointStrings).')';
         }
 
-        return 'POLYGON(' . implode(', ', $ringStrings) . ')';
+        return 'POLYGON('.implode(', ', $ringStrings).')';
     }
 
     public function toArray(): array
@@ -37,7 +45,7 @@ class Polygon implements Geometry
         return [
             'type' => 'Polygon',
             'coordinates' => array_map(function ($ring) {
-                return array_map(fn($point) => [$point->getLng(), $point->getLat()], $ring);
+                return array_map(fn ($point) => [$point->getLng(), $point->getLat()], $ring);
             }, $this->rings),
             'srid' => $this->srid,
         ];

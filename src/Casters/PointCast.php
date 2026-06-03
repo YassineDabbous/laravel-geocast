@@ -3,33 +3,48 @@
 namespace Yaseen\GeoCast\Casters;
 
 use Illuminate\Contracts\Database\Eloquent\CastsAttributes;
-use InvalidArgumentException;
 use Illuminate\Support\Facades\DB;
-use Yaseen\GeoCast\MyGeoFactory;
+use InvalidArgumentException;
 use Yaseen\GeoCast\Geometries\Point;
+use Yaseen\GeoCast\MyGeoFactory;
 
 class PointCast implements CastsAttributes
 {
     public function get($model, string $key, $value, array $attributes): ?Point
     {
-        if (!$value || bin2hex($value) == 'e6100000010100000000000000000000000000000000000000') {
+        if (! $value) {
             return new Point(0, 0);
         }
 
-        $wkb = substr($value, 4); // Strip SRID
-        $geom = MyGeoFactory::parser()->parse($wkb);
+        try {
+            $wkb = hex2bin($value);
+        } catch (\Exception $e) {
+            return new Point(0, 0);
+        }
+
+        if ($wkb === false || $wkb === '') {
+            return new Point(0, 0);
+        }
+
+        try {
+            $geom = MyGeoFactory::parser()->parse($wkb);
+        } catch (\Exception $e) {
+            return new Point(0, 0);
+        }
 
         return $geom instanceof Point ? $geom : null;
     }
 
     public function set($model, string $key, $value, array $attributes)
     {
-        if ($value === null) return null;
+        if ($value === null) {
+            return null;
+        }
 
-        if (!$value instanceof Point) {
+        if (! $value instanceof Point) {
             throw new InvalidArgumentException("Field {$key} must be an instance of Point.");
         }
 
-        return DB::raw("ST_GeomFromText('{$value->toWkt()}', {$value->getSrid()}, 'axis-order=long-lat')");
+        return DB::raw("ST_GeomFromText('{$value->toWkt()}', {$value->getSrid()})");
     }
 }
