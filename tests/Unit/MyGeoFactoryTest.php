@@ -114,6 +114,23 @@ it('throws for unsupported geometry types', function () {
     expect(fn () => $factory->createLineString(2, []))->toThrow(RuntimeException::class, 'LineString');
     expect(fn () => $factory->createMultiPoint(2, []))->toThrow(RuntimeException::class, 'MultiPoint');
     expect(fn () => $factory->createMultiLineString(2, []))->toThrow(RuntimeException::class, 'MultiLineString');
-    expect(fn () => $factory->createMultiPolygon(2, []))->toThrow(RuntimeException::class, 'MultiPolygon');
     expect(fn () => $factory->createGeometryCollection(2, []))->toThrow(RuntimeException::class, 'GeometryCollection');
+});
+
+it('creates a MultiPolygon from polygons', function () {
+    $factory = new MyGeoFactory;
+
+    $ring = [
+        $factory->createPoint(2, ['x' => 0, 'y' => 0]),
+        $factory->createPoint(2, ['x' => 10, 'y' => 0]),
+        $factory->createPoint(2, ['x' => 10, 'y' => 10]),
+        $factory->createPoint(2, ['x' => 0, 'y' => 0]),
+    ];
+
+    $polygon = $factory->createPolygon(2, [$ring], 4326);
+    $multiPolygon = $factory->createMultiPolygon(2, [$polygon], 4326);
+
+    expect($multiPolygon)->toBeInstanceOf(\Yaseen\GeoCast\Geometries\MultiPolygon::class);
+    expect($multiPolygon->getPolygons())->toHaveCount(1);
+    expect($multiPolygon->getSrid())->toBe(4326);
 });

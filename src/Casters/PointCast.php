@@ -10,6 +10,13 @@ use Yaseen\GeoCast\MyGeoFactory;
 
 class PointCast implements CastsAttributes
 {
+    protected string $type;
+
+    public function __construct(string $type = 'geometry')
+    {
+        $this->type = strtolower($type);
+    }
+
     public function get($model, string $key, $value, array $attributes): ?Point
     {
         if (! $value) {
@@ -45,11 +52,13 @@ class PointCast implements CastsAttributes
             throw new InvalidArgumentException("Field {$key} must be an instance of Point.");
         }
 
-        // $wkt = DB::connection()->getPdo()->quote($value->toWkt());
         $wkt = str_replace("'", "''", $value->toWkt());
         $srid = (int) $value->getSrid();
 
-        // return DB::raw("ST_GeomFromText({$wkt}, {$srid})");
+        if ($this->type === 'geography') {
+            return DB::raw("ST_GeogFromText('SRID={$srid};{$wkt}')");
+        }
+
         return DB::raw("ST_GeomFromText('{$wkt}', {$srid})");
     }
 }

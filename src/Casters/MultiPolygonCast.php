@@ -5,10 +5,10 @@ namespace Yaseen\GeoCast\Casters;
 use Illuminate\Contracts\Database\Eloquent\CastsAttributes;
 use Illuminate\Support\Facades\DB;
 use InvalidArgumentException;
-use Yaseen\GeoCast\Geometries\Polygon;
+use Yaseen\GeoCast\Geometries\MultiPolygon;
 use Yaseen\GeoCast\MyGeoFactory;
 
-class PolygonCast implements CastsAttributes
+class MultiPolygonCast implements CastsAttributes
 {
     protected string $type;
 
@@ -17,7 +17,7 @@ class PolygonCast implements CastsAttributes
         $this->type = strtolower($type);
     }
 
-    public function get($model, string $key, $value, array $attributes): ?Polygon
+    public function get($model, string $key, $value, array $attributes): ?MultiPolygon
     {
         if (! $value) {
             return null;
@@ -39,7 +39,7 @@ class PolygonCast implements CastsAttributes
             return null;
         }
 
-        return $geom instanceof Polygon ? $geom : null;
+        return $geom instanceof MultiPolygon ? $geom : null;
     }
 
     public function set($model, string $key, $value, array $attributes)
@@ -48,8 +48,8 @@ class PolygonCast implements CastsAttributes
             return null;
         }
 
-        if (! $value instanceof Polygon) {
-            throw new InvalidArgumentException("Field {$key} must be an instance of Polygon.");
+        if (! $value instanceof MultiPolygon) {
+            throw new InvalidArgumentException("Field {$key} must be an instance of MultiPolygon.");
         }
 
         $wkt = str_replace("'", "''", $value->toWkt());

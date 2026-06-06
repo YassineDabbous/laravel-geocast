@@ -5,90 +5,165 @@ namespace Yaseen\GeoCast;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
 use InvalidArgumentException;
+use RuntimeException;
+use Yaseen\GeoCast\Casters\MultiPolygonCast;
 use Yaseen\GeoCast\Casters\PointCast;
 use Yaseen\GeoCast\Casters\PolygonCast;
 use Yaseen\GeoCast\Geometries\Geometry;
 
 trait Spatialable
 {
-    /**
-     * Scope: Filter records within a specific distance of a target geometry.
-     * Works uniformly whether the column is a Point or Polygon.
-     */
-    public function scopeWithinDistanceTo(Builder $query, string $column, Geometry $geometry, int $distance): void
+    public function scopeWithinDistanceTo(Builder $query, string $column, Geometry $geometry, int $distance, ?string $typeOverride = null): void
     {
         $this->validateSpatialAttribute($column);
 
-        $query->whereRaw("ST_Distance(
-            {$column}::geography,
-            ST_GeomFromText(?, ?)::geography
-        ) <= ?", [$geometry->toWkt(), $geometry->getSrid(), $distance]);
+        $type = $typeOverride ?? $this->getSpatialType($column);
+
+        if ($type === 'geography') {
+            $query->whereRaw(
+                "ST_DWithin({$column}, ST_GeogFromText(?), ?)",
+                [
+                    "SRID={$geometry->getSrid()};".$geometry->toWkt(),
+                    $distance,
+                ]
+            );
+
+            return;
+        }
+
+        $query->whereRaw(
+            "ST_DWithin({$column}::geography, ST_GeomFromText(?, ?)::geography, ?)",
+            [
+                $geometry->toWkt(),
+                $geometry->getSrid(),
+                $distance,
+            ]
+        );
     }
 
-    public function scopeOrderByDistanceTo(Builder $query, string $column, Geometry $geometry, string $direction = 'asc'): void
+    public function scopeOrderByDistanceTo(Builder $query, string $column, Geometry $geometry, string $direction = 'asc', ?string $typeOverride = null): void
     {
         $this->validateSpatialAttribute($column);
+
         $direction = strtolower($direction) === 'desc' ? 'desc' : 'asc';
+        $type = $typeOverride ?? $this->getSpatialType($column);
 
-        $query->orderByRaw("ST_Distance(
-            {$column}::geography,
-            ST_GeomFromText(?, ?)::geography
-        ) {$direction}", [$geometry->toWkt(), $geometry->getSrid()]);
+        if ($type === 'geography') {
+            $query->orderByRaw(
+                "ST_Distance({$column}, ST_GeogFromText(?)) {$direction}",
+                [
+                    "SRID={$geometry->getSrid()};".$geometry->toWkt(),
+                ]
+            );
+
+            return;
+        }
+
+        $query->orderByRaw(
+            "ST_Distance({$column}::geography, ST_GeomFromText(?, ?)::geography) {$direction}",
+            [
+                $geometry->toWkt(),
+                $geometry->getSrid(),
+            ]
+        );
     }
 
-    public function scopeContainsGeometry(Builder $query, string $column, Geometry $geometry): void
+    public function scopeContainsGeometry(Builder $query, string $column, Geometry $geometry, ?string $typeOverride = null): void
     {
         $this->validateSpatialAttribute($column);
 
-        $query->whereRaw("ST_Contains(
-            {$column},
-            ST_GeomFromText(?, ?)
-        )", [$geometry->toWkt(), $geometry->getSrid()]);
+        $type = $typeOverride ?? $this->getSpatialType($column);
+
+        if ($type === 'geography') {
+            throw new RuntimeException('ST_Contains is only supported for geometry columns.');
+        }
+
+        $query->whereRaw(
+            "ST_Contains({$column}, ST_GeomFromText(?, ?))",
+            [
+                $geometry->toWkt(),
+                $geometry->getSrid(),
+            ]
+        );
     }
 
-    public function scopeWithinGeometry(Builder $query, string $column, Geometry $geometry): void
+    public function scopeWithinGeometry(Builder $query, string $column, Geometry $geometry, ?string $typeOverride = null): void
     {
         $this->validateSpatialAttribute($column);
 
-        $query->whereRaw("ST_Within(
-            {$column},
-            ST_GeomFromText(?, ?)
-        )", [$geometry->toWkt(), $geometry->getSrid()]);
+        $type = $typeOverride ?? $this->getSpatialType($column);
+
+        if ($type === 'geography') {
+            throw new RuntimeException('ST_Within is only supported for geometry columns.');
+        }
+
+        $query->whereRaw(
+            "ST_Within({$column}, ST_GeomFromText(?, ?))",
+            [
+                $geometry->toWkt(),
+                $geometry->getSrid(),
+            ]
+        );
     }
 
-    public function scopeIntersectsWith(Builder $query, string $column, Geometry $geometry): void
+    public function scopeIntersectsWith(Builder $query, string $column, Geometry $geometry, ?string $typeOverride = null): void
     {
         $this->validateSpatialAttribute($column);
 
-        $query->whereRaw("ST_Intersects(
-            {$column},
-            ST_GeomFromText(?, ?)
-        )", [$geometry->toWkt(), $geometry->getSrid()]);
+        $type = $typeOverride ?? $this->getSpatialType($column);
+
+        if ($type === 'geography') {
+            throw new RuntimeException('ST_Intersects is only supported for geometry columns.');
+        }
+
+        $query->whereRaw(
+            "ST_Intersects({$column}, ST_GeomFromText(?, ?))",
+            [
+                $geometry->toWkt(),
+                $geometry->getSrid(),
+            ]
+        );
     }
 
-    /**
-     * Scope: Appends a `{column}_area` attribute to your model query in square meters.
-     *
-     * @note Uses addSelect so it appends to any existing column list.
-     *       If the caller chains ->select('id') before this scope, the area
-     *       column is added alongside — not replaced.
-     */
-    public function scopeWithArea(Builder $query, string $column): void
+    public function scopeWithArea(Builder $query, string $column, ?string $typeOverride = null): void
     {
         $this->validateSpatialAttribute($column);
+
+        $type = $typeOverride ?? $this->getSpatialType($column);
+
+        if ($type === 'geography') {
+            $query->addSelect(DB::raw("ST_Area({$column}) as {$column}_area"));
+
+            return;
+        }
 
         $query->addSelect(DB::raw("ST_Area({$column}::geography) as {$column}_area"));
     }
 
-    /**
-     * Private helper to enforce that the column being queried is actually
-     * registered as a spatial cast in the Eloquent model.
-     */
+    private function getSpatialType(string $column): string
+    {
+        $casts = $this->getCasts();
+
+        $cast = $casts[$column] ?? null;
+
+        if (! $cast) {
+            return 'geometry';
+        }
+
+        $parts = explode(':', $cast);
+
+        return strtolower($parts[1] ?? 'geometry');
+    }
+
     private function validateSpatialAttribute(string $column): void
     {
         $casts = $this->getCasts();
 
-        $validCasts = [PointCast::class, PolygonCast::class];
+        $validCasts = [
+            PointCast::class,
+            PolygonCast::class,
+            MultiPolygonCast::class,
+        ];
 
         if (! array_key_exists($column, $casts)) {
             throw new InvalidArgumentException("The column '{$column}' is not registered with a valid Spatial Cast class.");
@@ -96,7 +171,7 @@ trait Spatialable
 
         $castClass = explode(':', $casts[$column])[0];
 
-        if (! in_array($castClass, $validCasts)) {
+        if (! in_array($castClass, $validCasts, true)) {
             throw new InvalidArgumentException("The column '{$column}' is not registered with a valid Spatial Cast class.");
         }
     }

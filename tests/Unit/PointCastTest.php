@@ -78,6 +78,16 @@ it('creates ST_GeomFromText expression from a Point', function () {
     expect($result->getValue(DB::connection()->getQueryGrammar()))->toBe("ST_GeomFromText('POINT(10.5 20.7)', 4326)");
 });
 
+it('creates ST_GeogFromText expression from a Point with geography type', function () {
+    $point = new Point(10.5, 20.7, 4326);
+
+    $cast = new PointCast('geography');
+    $result = $cast->set(null, 'location', $point, []);
+
+    expect($result)->toBeInstanceOf(Expression::class);
+    expect($result->getValue(DB::connection()->getQueryGrammar()))->toBe("ST_GeogFromText('SRID=4326;POINT(10.5 20.7)')");
+});
+
 it('returns null when setting null', function () {
     $cast = new PointCast;
     $result = $cast->set(null, 'location', null, []);

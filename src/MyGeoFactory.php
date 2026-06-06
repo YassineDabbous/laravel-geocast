@@ -6,6 +6,7 @@ namespace Yaseen\GeoCast;
 
 use GeoIO\Factory;
 use GeoIO\WKB\Parser\Parser;
+use Yaseen\GeoCast\Geometries\MultiPolygon;
 use Yaseen\GeoCast\Geometries\Point;
 use Yaseen\GeoCast\Geometries\Polygon;
 
@@ -50,7 +51,7 @@ class MyGeoFactory implements Factory
 
     public function createMultiPolygon($dimension, array $polygons, $srid = null)
     {
-        throw new \RuntimeException('Unsupported geometry type: MultiPolygon');
+        return new MultiPolygon(polygons: $polygons, srid: $srid ?? 4326);
     }
 
     public function createGeometryCollection($dimension, array $geometries, $srid = null)

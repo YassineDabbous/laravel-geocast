@@ -68,6 +68,24 @@ it('creates ST_GeomFromText expression from a Polygon', function () {
     expect($result->getValue(DB::connection()->getQueryGrammar()))->toBe("ST_GeomFromText('POLYGON((0 0, 10 0, 10 10, 0 0))', 4326)");
 });
 
+it('creates ST_GeogFromText expression from a Polygon with geography type', function () {
+    $ring = [
+        new Point(0, 0),
+        new Point(10, 0),
+        new Point(10, 10),
+        new Point(0, 0),
+    ];
+    $polygon = new Polygon([$ring], 4326);
+
+    $cast = new PolygonCast('geography');
+    $result = $cast->set(null, 'area', $polygon, []);
+
+    expect($result)->toBeInstanceOf(Expression::class);
+    expect($result->getValue(DB::connection()->getQueryGrammar()))->toBe("ST_GeogFromText('SRID=4326;POLYGON((0 0, 10 0, 10 10, 0 0))')");
+});
+
+
+
 it('returns null when setting null', function () {
     $cast = new PolygonCast;
     $result = $cast->set(null, 'area', null, []);
