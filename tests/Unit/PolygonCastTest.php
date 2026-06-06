@@ -84,8 +84,6 @@ it('creates ST_GeogFromText expression from a Polygon with geography type', func
     expect($result->getValue(DB::connection()->getQueryGrammar()))->toBe("ST_GeogFromText('SRID=4326;POLYGON((0 0, 10 0, 10 10, 0 0))')");
 });
 
-
-
 it('returns null when setting null', function () {
     $cast = new PolygonCast;
     $result = $cast->set(null, 'area', null, []);

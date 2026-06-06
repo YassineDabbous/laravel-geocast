@@ -1,6 +1,7 @@
 <?php
 
 use GeoIO\WKB\Parser\Parser;
+use Yaseen\GeoCast\Geometries\MultiPolygon;
 use Yaseen\GeoCast\Geometries\Point;
 use Yaseen\GeoCast\Geometries\Polygon;
 use Yaseen\GeoCast\MyGeoFactory;
@@ -130,7 +131,7 @@ it('creates a MultiPolygon from polygons', function () {
     $polygon = $factory->createPolygon(2, [$ring], 4326);
     $multiPolygon = $factory->createMultiPolygon(2, [$polygon], 4326);
 
-    expect($multiPolygon)->toBeInstanceOf(\Yaseen\GeoCast\Geometries\MultiPolygon::class);
+    expect($multiPolygon)->toBeInstanceOf(MultiPolygon::class);
     expect($multiPolygon->getPolygons())->toHaveCount(1);
     expect($multiPolygon->getSrid())->toBe(4326);
 });
